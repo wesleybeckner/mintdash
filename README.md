@@ -1,6 +1,8 @@
 # MintDash
 a minty dashboard!
 
+![image](assets/snap1.PNG)
+
 ```
 git clone https://github.com/wesleybeckner/mintdash.git
 cd mintdash
