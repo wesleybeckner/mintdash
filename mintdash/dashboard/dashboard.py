@@ -41,6 +41,27 @@ def init_dashboard(server, debug=False):
         title = "MintDash"
         )
 
+    MODAL = html.Div(
+    [
+        dbc.Button("Show me how to connect my data", id="open", n_clicks=0),
+        dbc.Modal(
+            [
+                dbc.ModalHeader(dbc.ModalTitle("Upload Data From Mint")),
+                dbc.ModalBody(html.Img(
+                    src='assets/upload_steps.gif', width='750px'), style={'textAlign': 'center'}),
+                dbc.ModalFooter(
+                    dbc.Button(
+                        "Close", id="close", className="ms-auto", n_clicks=0
+                    )
+                ),
+            ],
+            id="modal",
+            size="lg",
+            is_open=False,
+        ),
+    ]
+)
+
     UPLOAD = html.Div([
     dcc.Upload(
                     id='upload-data',
@@ -66,6 +87,7 @@ def init_dashboard(server, debug=False):
     CONTROLS = html.Div([
         html.Div([
         html.H2("Controls"),
+        MODAL,
         UPLOAD,
         dbc.Row([
             dbc.Col([
@@ -222,3 +244,13 @@ def init_callbacks(app):
                                         'padding': '0px'}
                     ),
         return fig1, fig2, obj3, "MintDash"
+
+    @app.callback(
+    Output("modal", "is_open"),
+    [Input("open", "n_clicks"), Input("close", "n_clicks")],
+    [State("modal", "is_open")],
+    )
+    def toggle_modal(n1, n2, is_open):
+        if n1 or n2:
+            return not is_open
+        return is_open
