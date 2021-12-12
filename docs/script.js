@@ -39,7 +39,6 @@ function buildPlot1(plot_specs) {
     var series = []
     var colors = []
     colors.push("#00E396")
-    
     colors.push("#008FFB")
     colors.push("#FF4560")
     console.log(data)
@@ -134,6 +133,9 @@ function buildPlot2(plot_specs) {
   } else if (plot_specs == "Above/Below Median") {
     var response = localStorage.getItem('category4');
     var data = JSON.parse(response);
+  } else if (plot_specs == "Spend Threshold") {
+    var response = localStorage.getItem('category5');
+    var data = JSON.parse(response);
   }
 
   if (plot_specs == 'None') {
@@ -180,7 +182,41 @@ function buildPlot2(plot_specs) {
       data: bottom
     }
     ]
-  } else {
+  } else if (plot_specs == "Spend Threshold") {
+    var category_raw = data["Category"];
+    var top = [];
+    var middle = [];
+    var bottom = [];
+    var categories = [];
+    
+    var maxy = 0;
+    var series = []
+    var colors = []
+    colors.push("#00E396")
+    colors.push("#008FFB")
+    colors.push("#FF4560")
+    console.log(data)
+
+    
+    for(var i in category_raw) {
+      
+      categories.push(data["Category"][i]);
+      top.push(data["greater than 150"][i]);
+      bottom.push(data["less than 20"][i]);
+      middle.push(data["between 20 and 150"][i]);
+    };
+
+    var series = [{
+      name: 'Less than 20',
+      data: bottom
+    }, {
+      name: 'Between 20 and 150',
+      data: middle,
+    }, {
+      name: 'Greater than 150',
+      data: top,
+    }
+    ]} else {
     var category_raw = data["Category"];
     var top = [];
     var middle = [];
@@ -490,6 +526,12 @@ function handleCategory4() {
     localStorage.setItem('category4', this.responseText)
   }
 }
+function handleCategory5() {
+  if (successfulRequest(this)) {
+    var response = JSON.parse(this.responseText);
+    localStorage.setItem('category5', this.responseText)
+  }
+}
 
 var base_url = "https://raw.githubusercontent.com/wesleybeckner/mintdash/main/examples/static_data/";
 
@@ -499,6 +541,7 @@ ajaxRequest("GET", base_url + "category_spending_none.json", handleCategory1);
 ajaxRequest("GET", base_url + "category_spending_10.json", handleCategory2);
 ajaxRequest("GET", base_url + "category_spending_25.json", handleCategory3);
 ajaxRequest("GET", base_url + "category_spending_50.json", handleCategory4);
+ajaxRequest("GET", base_url + "category_spending_threshold.json", handleCategory5);
 
 options2 = buildPlot2('None');
 var chart = new ApexCharts(document.querySelector("#chart2"), options2);
