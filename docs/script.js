@@ -4,6 +4,9 @@ function buildPlot1(plot_specs) {
   if (plot_specs == 'Spend Threshold') {
     var response = localStorage.getItem('monthly2');
     var data = JSON.parse(response);
+  } else if (plot_specs == 'Time-Based') {
+    var response = localStorage.getItem('monthly3');
+    var data = JSON.parse(response);
   } else {
     var response = localStorage.getItem('monthly');
     var data = JSON.parse(response);
@@ -24,6 +27,8 @@ function buildPlot1(plot_specs) {
     compare = "Median"
   } else if (selected == "Spend Threshold") {
     compare = "Threshold"
+  } else if (selected == "Time-Based") {
+    compare = "Time"
   } else {
     compare = "None"
   }
@@ -65,15 +70,41 @@ function buildPlot1(plot_specs) {
     ]
     options1['series'] = series;
     options1['plotOptions']['bar']['distributed'] = false
-    // plotOptions: {
-    //   bar: {
-    //     distributed: true,
-    //     borderRadius: 10,
-    //     dataLabels: {
-    //       position: 'top', // top, center, bottom
-    //     },
-    //   }
-    // },
+  } else if (compare == 'Time') {
+    var category_raw = data["Date"];
+    var key1 = Object.keys(data)[1];
+    var key2 = Object.keys(data)[2];
+    console.log(key2)
+    var top = [];
+    var bottom = [];
+    var categories = [];
+    
+    var maxy = 0;
+    var series = []
+    var colors = []
+    colors.push("#00E396")
+    // colors.push("#008FFB")
+    colors.push("#FF4560")
+    console.log(data)
+
+    
+    for(var i in category_raw) {
+      
+      categories.push(data["Date"][i]);
+      top.push(data[key1][i]);
+      bottom.push(data[key2][i]);
+    };
+
+    var series = [{
+      name: key2,
+      data: bottom
+    }, {
+      name: key1,
+      data: top,
+    }
+    ]
+    options1['series'] = series;
+    options1['plotOptions']['bar']['distributed'] = false
   } else {
     for(var i in amount) {
       result.push(amount[i]);
@@ -500,6 +531,12 @@ function handleMonthly2() {
     localStorage.setItem('monthly2', this.responseText)
   }
 }
+function handleMonthly3() {
+  if (successfulRequest(this)) {
+    var response = JSON.parse(this.responseText);
+    localStorage.setItem('monthly3', this.responseText)
+  }
+}
 
 // CATEGORY
 function handleCategory1() {
@@ -537,6 +574,7 @@ var base_url = "https://raw.githubusercontent.com/wesleybeckner/mintdash/main/ex
 
 ajaxRequest("GET", base_url + "monthly_spending.json", handleMonthly);
 ajaxRequest("GET", base_url + "monthly_spending_threshold.json", handleMonthly2);
+ajaxRequest("GET", base_url + "monthly_spending_time.json", handleMonthly3);
 ajaxRequest("GET", base_url + "category_spending_none.json", handleCategory1);
 ajaxRequest("GET", base_url + "category_spending_10.json", handleCategory2);
 ajaxRequest("GET", base_url + "category_spending_25.json", handleCategory3);
