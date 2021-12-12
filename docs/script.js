@@ -1,49 +1,116 @@
 // CHART DATA AND FUNCTIONS
-function buildPlot1(data) {
+function buildPlot1(plot_specs) {
+  console.log(plot_specs);
+  if (plot_specs == 'Spend Threshold') {
+    var response = localStorage.getItem('monthly2');
+    var data = JSON.parse(response);
+  } else {
+    var response = localStorage.getItem('monthly');
+    var data = JSON.parse(response);
+  } 
   var amount = data["Amount"];
   var result = [];
   var colors = [];
   var maxy = 0;
-  
-  for(var i in amount) {
-    result.push(amount[i]);
 
-    if (parseInt(amount[i]) > maxy) {
-      maxy = parseInt(amount[i])
+  // Decile Quartile or Median
+  var compare = "Quartile"
+  var selected = document.getElementsByClassName('btn disabled')[0].innerHTML;
+  if (selected == "Top/Bottom 10%") {
+    compare = "Decile"
+  } else if (selected == "Top/Bottom Quartile") {
+    compare = "Quartile"
+  } else if (selected == "Above/Below Median") {
+    compare = "Median"
+  } else if (selected == "Spend Threshold") {
+    compare = "Threshold"
+  } else {
+    compare = "None"
+  }
+  
+  if (compare == "Threshold") {
+    var category_raw = data["Date"];
+    var top = [];
+    var middle = [];
+    var bottom = [];
+    var categories = [];
+    
+    var maxy = 0;
+    var series = []
+    var colors = []
+    colors.push("#00E396")
+    
+    colors.push("#008FFB")
+    colors.push("#FF4560")
+    console.log(data)
+
+    
+    for(var i in category_raw) {
       
+      categories.push(data["Date"][i]);
+      top.push(data["greater than 150"][i]);
+      bottom.push(data["less than 20"][i]);
+      middle.push(data["between 20 and 150"][i]);
     };
 
-    // Decile Quartile or Median
-    var compare = "Quartile"
-    var selected = document.getElementsByClassName('btn disabled')[0].innerHTML;
-    if (selected == "Top/Bottom 10%") {
-      compare = "Decile"
-    } else if (selected == "Top/Bottom Quartile") {
-      compare = "Quartile"
-    } else if (selected == "Above/Below Median") {
-      compare = "Median"
-    } else {
-      compare = "None"
+    var series = [{
+      name: 'Less than 20',
+      data: bottom
+    }, {
+      name: 'Between 20 and 150',
+      data: middle,
+    }, {
+      name: 'Greater than 150',
+      data: top,
     }
-
-    if (compare != "None") {
-      if (data[compare][i] == 'Top') {
-        colors.push("#FF4560")
-      }
-      else if (data[compare][i] == 'Bottom') {
-        colors.push("#00E396")
-      }
-      else {
+    ]
+    options1['series'] = series;
+    options1['plotOptions']['bar']['distributed'] = false
+    // plotOptions: {
+    //   bar: {
+    //     distributed: true,
+    //     borderRadius: 10,
+    //     dataLabels: {
+    //       position: 'top', // top, center, bottom
+    //     },
+    //   }
+    // },
+  } else {
+    for(var i in amount) {
+      result.push(amount[i]);
+  
+      if (parseInt(amount[i]) > maxy) {
+        maxy = parseInt(amount[i])
+        
+      };
+  
+      if (compare != "None") {
+        if (data[compare][i] == 'Top') {
+          colors.push("#FF4560")
+        }
+        else if (data[compare][i] == 'Bottom') {
+          colors.push("#00E396")
+        }
+        else {
+          colors.push("#008FFB")
+        }
+      } else {
         colors.push("#008FFB")
       }
-    } else {
-      colors.push("#008FFB")
-    }
-
-  };
+      
+    };
+    var series = [{
+      name: 'hehe',
+      data: result,
+    }]
+    options1['series'] = series;
+    options1['plotOptions']['bar']['distributed'] = true
+  }
+  
   
   // update objects
-  options1['series'][0]['data'] = result;
+  
+  
   options1['colors'] = colors;
   options1['yaxis']['max'] = maxy+maxy*.10;
 
@@ -167,6 +234,7 @@ legend: {
   data: [10,10,10],
 }],
   chart: {
+  stacked: true,
   height: 350,
   type: 'bar',
   id: 'timeseries',
@@ -351,9 +419,7 @@ $(document).ready(function () {
     var selected = document.getElementsByClassName('btn disabled')[0].innerHTML;
 
     // MONTHLY
-    let response = localStorage.getItem('monthly');
-    let data = JSON.parse(response);
-    options1 = buildPlot1(data);
+    options1 = buildPlot1(selected);
     ApexCharts.exec('timeseries', 'updateOptions', options1);
 
     // CATEGORY
@@ -392,6 +458,12 @@ function handleMonthly() {
     
   }
 }
+function handleMonthly2() {
+  if (successfulRequest(this)) {
+    var response = JSON.parse(this.responseText);
+    localStorage.setItem('monthly2', this.responseText)
+  }
+}
 
 // CATEGORY
 function handleCategory1() {
@@ -420,10 +492,9 @@ function handleCategory4() {
 }
 
 var base_url = "https://raw.githubusercontent.com/wesleybeckner/mintdash/main/examples/static_data/";
-var monthly_url = "https://raw.githubusercontent.com/wesleybeckner/mintdash/main/examples/static_data/monthly_spending.json";
-var category_url = "https://raw.githubusercontent.com/wesleybeckner/mintdash/main/examples/static_data/category_spending_none.json";
 
-ajaxRequest("GET", monthly_url, handleMonthly);
+ajaxRequest("GET", base_url + "monthly_spending.json", handleMonthly);
+ajaxRequest("GET", base_url + "monthly_spending_threshold.json", handleMonthly2);
 ajaxRequest("GET", base_url + "category_spending_none.json", handleCategory1);
 ajaxRequest("GET", base_url + "category_spending_10.json", handleCategory2);
 ajaxRequest("GET", base_url + "category_spending_25.json", handleCategory3);
