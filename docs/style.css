@@ -1,0 +1,32 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+body {
+  font-family: Roboto, sans-serif;
+}
+
+#chart {
+  max-width: 650px;
+  margin: 35px auto;
+}
+
+.container-fluid {
+  padding: 20px
+}
+
+.dropdown {
+  padding: 5px
+}
+
+.btn {
+  margin: 5px;
+  width: 200px;
+}
+
+.row {
+  text-align: center;
+  /* margin: auto; */
+}
+
+.col-md-4 {
+  margin: auto;
+}
