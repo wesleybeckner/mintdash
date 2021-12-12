@@ -70,6 +70,7 @@ function buildPlot1(plot_specs) {
     ]
     options1['series'] = series;
     options1['plotOptions']['bar']['distributed'] = false
+    options1['plotOptions']['bar']['borderRadius'] = 10
   } else if (compare == 'Time') {
     var category_raw = data["Date"];
     var key1 = Object.keys(data)[1];
@@ -105,6 +106,7 @@ function buildPlot1(plot_specs) {
     ]
     options1['series'] = series;
     options1['plotOptions']['bar']['distributed'] = false
+    options1['plotOptions']['bar']['borderRadius'] = 0
   } else {
     for(var i in amount) {
       result.push(amount[i]);
@@ -135,6 +137,7 @@ function buildPlot1(plot_specs) {
     }]
     options1['series'] = series;
     options1['plotOptions']['bar']['distributed'] = true
+    options1['plotOptions']['bar']['borderRadius'] = 10
   }
   
   
@@ -166,6 +169,9 @@ function buildPlot2(plot_specs) {
     var data = JSON.parse(response);
   } else if (plot_specs == "Spend Threshold") {
     var response = localStorage.getItem('category5');
+    var data = JSON.parse(response);
+  } else if (plot_specs == "Time-Based") {
+    var response = localStorage.getItem('category6');
     var data = JSON.parse(response);
   }
 
@@ -247,7 +253,41 @@ function buildPlot2(plot_specs) {
       name: 'Greater than 150',
       data: top,
     }
-    ]} else {
+    ]} else if (plot_specs == 'Time-Based') {
+      var category_raw = data["Category"];
+      var key1 = Object.keys(data)[1];
+      var key2 = Object.keys(data)[2];
+      console.log(key2)
+      var top = [];
+      var bottom = [];
+      var categories = [];
+      
+      var maxy = 0;
+      var series = []
+      var colors = []
+      
+      // colors.push("#008FFB")
+      colors.push("#FF4560")
+      colors.push("#00E396")
+      console.log(data)
+  
+      
+      for(var i in category_raw) {
+        
+        categories.push(data["Category"][i]);
+        top.push(data[key1][i]);
+        bottom.push(data[key2][i]);
+      };
+  
+      var series = [{
+        name: key1,
+        data: top,
+      }, {
+        name: key2,
+        data: bottom
+      }, 
+      ]
+    } else {
     var category_raw = data["Category"];
     var top = [];
     var middle = [];
@@ -281,7 +321,7 @@ function buildPlot2(plot_specs) {
       data: bottom
     }
     ]
-  }
+  } 
 
   // update objects
 
@@ -569,6 +609,12 @@ function handleCategory5() {
     localStorage.setItem('category5', this.responseText)
   }
 }
+function handleCategory6() {
+  if (successfulRequest(this)) {
+    var response = JSON.parse(this.responseText);
+    localStorage.setItem('category6', this.responseText)
+  }
+}
 
 var base_url = "https://raw.githubusercontent.com/wesleybeckner/mintdash/main/examples/static_data/";
 
@@ -580,6 +626,7 @@ ajaxRequest("GET", base_url + "category_spending_10.json", handleCategory2);
 ajaxRequest("GET", base_url + "category_spending_25.json", handleCategory3);
 ajaxRequest("GET", base_url + "category_spending_50.json", handleCategory4);
 ajaxRequest("GET", base_url + "category_spending_threshold.json", handleCategory5);
+ajaxRequest("GET", base_url + "category_spending_time.json", handleCategory6);
 
 options2 = buildPlot2('None');
 var chart = new ApexCharts(document.querySelector("#chart2"), options2);
