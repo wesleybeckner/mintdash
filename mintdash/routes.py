@@ -1,7 +1,15 @@
 """Routes for parent Flask app."""
-from flask import redirect, url_for
+from flask import request
 from flask import current_app as app
+from .api import freeze_df
+import pandas as pd
 
-# @app.route('/favicon.ico')
-# def favicon():
-#     return redirect(url_for('static', filename='favicon.ico'))
+@app.route('/freeze/', methods=["POST", "GET"])
+def freeze():
+    if request.method == "POST":
+        url = request.get_json()
+        df = pd.DataFrame(url)
+        df['Date'] = pd.to_datetime(df['Date'])
+        return '{}'.format(freeze_df(df))
+    elif request.method == "GET":
+        return "API Running, send dataframe in JSON"
