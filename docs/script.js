@@ -341,7 +341,7 @@ legend: {
 }],
   chart: {
   stacked: true,
-  height: 320,
+  height: 350,
   type: 'bar',
   id: 'timeseries',
   animations: {
@@ -433,7 +433,7 @@ var options2 = {
     data: [10,10,10],
   }],
     chart: {
-    height: 320,
+    height: 350,
     type: 'bar',
     id: 'categories',
     stacked: true,
@@ -704,7 +704,7 @@ $(document).ready(function() {
       }
     });
 
-    xhr.open("POST", "http://127.0.0.1:5000/freeze/");
+    xhr.open("POST", "https://mintdash.azurewebsites.net/freeze/");
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.send(rdydata);
@@ -749,3 +749,19 @@ $(document).ready(function() {
 			$("#introHeader").html('The File APIs is not fully supported in this browser. Please use another browser.');
 		}	
 });
+
+$(document).ready(function () {
+  var xhr = new XMLHttpRequest();
+  xhr.withCredentials = false;
+
+  xhr.addEventListener("readystatechange", function() {
+    if(this.readyState === 4) {
+      console.log(this.responseText);
+      document.getElementById('txtFileUpload').innerHTML = "Upload data from Mint, Server Ready"
+    }
+  });
+
+  xhr.open("GET", "https://mintdash.azurewebsites.net/freeze/");
+
+  xhr.send();
+})

@@ -36,3 +36,4 @@ flask
 python-dotenv==0.19.2
 scikit-learn==1.0.1
 joblib==1.0.1
+Flask-Cors==3.0.10
