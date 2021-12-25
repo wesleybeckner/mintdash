@@ -30,3 +30,76 @@ body {
 .col-md-4 {
   margin: auto;
 }
+
+/* loading bar */
+
+.loader {
+  display: flex;
+  align-items: center;
+}
+
+.loader-shap {
+  width: 2rem;
+  height: 2rem;
+  background-color: #00E396;
+  margin: 1rem;
+  border-radius: 50%;
+  animation: load_shap 1.2s ease infinite;
+}
+
+.loader-shap:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.loader-shap:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.loader-shap:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes load_shap {
+  50% {
+    transform: translateY(-50%);
+    border-bottom: 16px solid #008FFB;
+    box-shadow: 0 8rem 2rem rgba(0,227,150,
+      0.24);
+  }
+}
+/*----------- End Main Style ------*/
+/* ======= Datlearn ======= */
+.datlearn {
+  /* position: fixed;
+  top: 0; */
+  text-align: center;
+  font-family: cursive;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* width: 50%; */
+  color: #fff;
+  visibility: hidden;
+}
+
+.datlearn--show {
+  visibility: visible;
+}
+.datlearn__love {
+  margin-left: 1rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+@keyframes blink {
+  25% {
+    opacity: 0;
+  }
+  50%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+}

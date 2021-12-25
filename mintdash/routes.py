@@ -10,6 +10,6 @@ def freeze():
         url = request.get_json()
         df = pd.DataFrame(url)
         df['Date'] = pd.to_datetime(df['Date'])
-        return '{}'.format(freeze_df(df))
+        return freeze_df(df)
     elif request.method == "GET":
         return "API Running, send dataframe in JSON"

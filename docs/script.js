@@ -18,7 +18,8 @@ function buildPlot1(plot_specs) {
 
   // Decile Quartile or Median
   var compare = "Quartile"
-  var selected = document.getElementsByClassName('btn disabled')[0].innerHTML;
+  // var selected = document.getElementsByClassName('btn disabled')[0].innerHTML;
+  var selected = plot_specs;
   if (selected == "Top/Bottom 10%") {
     compare = "Decile"
   } else if (selected == "Top/Bottom Quartile") {
@@ -142,10 +143,8 @@ function buildPlot1(plot_specs) {
   
   
   // update objects
-  
-  
   options1['colors'] = colors;
-  options1['yaxis']['max'] = maxy+maxy*.10;
+  // options1['yaxis']['max'] = maxy+maxy*.10;
 
   return options1
 }
@@ -342,7 +341,7 @@ legend: {
 }],
   chart: {
   stacked: true,
-  height: 350,
+  height: 320,
   type: 'bar',
   id: 'timeseries',
   animations: {
@@ -434,7 +433,7 @@ var options2 = {
     data: [10,10,10],
   }],
     chart: {
-    height: 350,
+    height: 320,
     type: 'bar',
     id: 'categories',
     stacked: true,
@@ -520,8 +519,8 @@ var options2 = {
 
 // DROPDOWN LOGIC
 $(document).ready(function () {
-  $('.btn').click(function () {
-    $('.btn').removeClass('disabled');
+  $('.btn-primary').click(function () {
+    $('.btn-primary').removeClass('disabled');
     $(this).addClass('disabled');
     var selected = document.getElementsByClassName('btn disabled')[0].innerHTML;
 
@@ -559,10 +558,6 @@ function handleMonthly() {
   if (successfulRequest(this)) {
     var response = JSON.parse(this.responseText);
     localStorage.setItem('monthly', this.responseText)
-    options1 = buildPlot1(response);
-    var chart = new ApexCharts(document.querySelector("#chart1"), options1);
-    chart.render();
-    
   }
 }
 function handleMonthly2() {
@@ -631,3 +626,126 @@ ajaxRequest("GET", base_url + "category_spending_time.json", handleCategory6);
 options2 = buildPlot2('None');
 var chart = new ApexCharts(document.querySelector("#chart2"), options2);
 chart.render();
+
+options1 = buildPlot1('None');
+var chart = new ApexCharts(document.querySelector("#chart1"), options1);
+chart.render();
+
+// FILE UPLOAD
+	
+$(document).ready(function() {
+
+	function FinanceProcessor() {	
+		var newStats = new Stats();
+		//Call Methods
+		newStats.init();	
+		newStats.collectTables();
+		//Update View
+		// updateDom();
+	};
+
+	//Create Stats class
+	var Stats = function(cleanedData){
+		this.cleanedData = cleanedData;
+	};
+	
+	// init method - prepares data for processing, sets all Stats properties to default values
+	Stats.prototype.init = function(){
+    var dates = $(data).map(function(){ return this.Date; });
+    var categories = $(data).map(function(){ return this.Category; });
+    var amounts = $(data).map(function(){ return this.Amount; });
+		
+		//combine arrays
+		cleanedData = {"Date": dates, 
+                   "Category": categories,
+                   "Amount": amounts};	
+    console.log(cleanedData);
+	};
+
+	// Calculate and output the required statistics
+	Stats.prototype.collectTables = function() {
+    $('.datlearn').addClass('datlearn--show');
+    
+    var rdydata = JSON.stringify(data);
+    
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+
+    xhr.addEventListener("readystatechange", function() {
+      if(this.readyState === 4) {
+        raw = this.responseText;
+        data = JSON.parse(raw);
+      
+        localStorage.setItem('monthly', data[0]);
+        localStorage.setItem('monthly2', data[1]);
+        localStorage.setItem('monthly3', data[2]);
+        localStorage.setItem('category1', data[3]);
+        localStorage.setItem('category2', data[4]);
+        localStorage.setItem('category3', data[5]);
+        localStorage.setItem('category4', data[6]);
+        localStorage.setItem('category5', data[7]);
+        localStorage.setItem('category6', data[8]);
+        console.log("successful import");
+        
+        $('.datlearn').removeClass('datlearn--show');
+
+        $('.btn-primary').removeClass('disabled');
+        $('none-button').addClass('disabled');
+        var selected = "None"
+
+        // MONTHLY
+        options1 = buildPlot1(selected);
+        ApexCharts.exec('timeseries', 'updateOptions', options1);
+
+        // CATEGORY
+        options2 = buildPlot2(selected);
+        ApexCharts.exec('categories', 'updateOptions', options2);
+
+      }
+    });
+
+    xhr.open("POST", "http://127.0.0.1:5000/freeze/");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.send(rdydata);
+	};
+
+	//File Upload
+
+	// Confirm browser supports HTML5 File API
+	var browserSupportFileUpload = function() {
+		var isCompatible = false;
+		if(window.File && window.FileReader && window.FileList && window.Blob) {
+			isCompatible = true;
+		}
+		return isCompatible;
+	};
+
+	// Upload selected file and create array
+	var uploadFile = function(evt) {
+		var file = evt.target.files[0];
+		var reader = new FileReader();
+		reader.readAsText(file);
+		reader.onload = function(event) {
+			//Jquery.csv
+			createArray($.csv.toObjects(event.target.result));			
+		};
+	};
+
+	// Validate file import
+	var createArray = function(data) {	
+		if(data !== null && data !== "" && data.length > 1) {
+			this.data = data;
+      console.log(data);
+			FinanceProcessor(data);
+		} else {
+		}	
+	};
+	
+	// event listener for file upload
+	if (browserSupportFileUpload()) {
+			document.getElementById('txtFileUpload').addEventListener('change', uploadFile, false);
+		} else {
+			$("#introHeader").html('The File APIs is not fully supported in this browser. Please use another browser.');
+		}	
+});
