@@ -757,7 +757,9 @@ $(document).ready(function () {
   xhr.addEventListener("readystatechange", function() {
     if(this.readyState === 4) {
       console.log(this.responseText);
-      document.getElementById('txtFileUpload').innerHTML = "Upload data from Mint, Server Ready"
+    } else if (this.status == 400) {
+      $("#txtFileUpload").attr('disabled', 'disabled');
+      document.getElementById('serverStatus').style = "display:block;";
     }
   });
 
