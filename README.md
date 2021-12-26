@@ -1,6 +1,9 @@
 # MintDash
 a minty dashboard!
 
+* [The Original](https://mintdash.azurewebsites.net/)
+* [The Jamstack Version](https://wesleybeckner.github.io/mintdash/)
+
 ![image](assets/snap1.PNG)
 
 ```
