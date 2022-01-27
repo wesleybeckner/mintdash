@@ -1,8 +1,8 @@
 # MintDash
 a minty dashboard!
 
-* [The Original](https://mintdash.azurewebsites.net/)
-* [The Jamstack Version](https://wesleybeckner.github.io/mintdash/)
+* [The Original](https://mintdash.azurewebsites.net/) ([Medium Article](https://medium.com/@wesleybeckner/a-minty-mint-dashboard-with-plotly-dash-bbaf09ca2f6a))
+* [The Jamstack Version](https://wesleybeckner.github.io/mintdash/) ([Medium Article](https://medium.com/@wesleybeckner/from-monolithic-to-jamstack-what-a-data-scientist-needs-to-know-for-modern-single-page-c6ef2f235567))
 
 ![image](assets/snap1.PNG)
 
